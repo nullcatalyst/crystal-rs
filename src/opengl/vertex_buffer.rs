@@ -39,14 +39,13 @@ impl VertexBuffer {
 
     pub(crate) fn update_with_slice<T>(
         &mut self,
-        gl: &Rc<WebGl2RenderingContext>,
         data: &[T],
-    ) -> Result<(), JsValue>
+    ) -> Result<(), String>
     where
         T: Sized,
     {
         unsafe {
-            gl::BindBuffer(gl::ARRAY_BUFFER, vertex_buffer.buffer);
+            gl::BindBuffer(gl::ARRAY_BUFFER, self.buffer);
             gl::BufferData(
                 gl::ARRAY_BUFFER,
                 (data.len() * size_of::<T>()) as isize,
@@ -54,7 +53,7 @@ impl VertexBuffer {
                 gl::DYNAMIC_DRAW,
             );
 
-            vertex_buffer.count = data.len();
+            self.count = data.len();
 
             Ok(())
         }

@@ -90,11 +90,11 @@ impl Context {
         &self,
         vertex_buffer: &mut VertexBuffer,
         data: &[T],
-    ) -> Result<(), JsValue>
+    ) -> Result<(), String>
     where
         T: Sized,
     {
-        vertex_buffer.update_with_slice(&self.context, data)
+        vertex_buffer.update_with_slice(data)
     }
 
     pub fn create_index_buffer<T>(&self, data: &[u16]) -> Result<IndexBuffer, String> {
