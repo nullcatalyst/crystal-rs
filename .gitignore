@@ -1,0 +1,11 @@
+# Generated directories
+/build/
+/dist/
+/target/
+
+# Personal config directories
+.vscode/
+.cargo/
+
+# macOS
+.DS_Store
