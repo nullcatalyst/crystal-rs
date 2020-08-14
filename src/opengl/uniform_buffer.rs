@@ -1,3 +1,4 @@
+use crate::opengl::err::CrystalResult;
 use gl;
 use std::mem::size_of;
 
@@ -14,7 +15,7 @@ impl<'a> Drop for UniformBuffer {
 }
 
 impl UniformBuffer {
-    pub(crate) fn from_value<T>(data: &T) -> Result<UniformBuffer, String>
+    pub(crate) fn from_value<T>(data: &T) -> CrystalResult<UniformBuffer>
     where
         T: Sized,
     {

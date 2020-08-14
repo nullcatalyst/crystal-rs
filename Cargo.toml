@@ -5,12 +5,13 @@ name = "crystal"
 version = "0.1.0"
 
 [features]
-crystal-opengl = [
+default = []
+opengl = [
   "gl",
   "image",
   "image/png",
 ]
-crystal-webgl = [
+webgl = [
   "wasm-bindgen",
   "js-sys",
   "web-sys",
@@ -24,7 +25,6 @@ crystal-webgl = [
   "web-sys/WebGlUniformLocation",
   "web-sys/WebGlVertexArrayObject",
 ]
-default = []
 
 [dependencies]
 gl = {version = "0.14.0", optional = true}

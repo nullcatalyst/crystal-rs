@@ -1,6 +1,7 @@
-use crate::webgl::{index_buffer::IndexBuffer, vertex_buffer::VertexBuffer};
+use crate::webgl::err::CrystalResult;
+use crate::webgl::index_buffer::IndexBuffer;
+use crate::webgl::vertex_buffer::VertexBuffer;
 use std::rc::Rc;
-use wasm_bindgen::JsValue;
 use web_sys::{WebGl2RenderingContext, WebGlVertexArrayObject};
 
 pub struct Binding<'a> {
@@ -26,7 +27,7 @@ impl Renderable {
     pub(crate) fn from_bindings(
         gl: &Rc<WebGl2RenderingContext>,
         bindings: &[Binding],
-    ) -> Result<Renderable, JsValue> {
+    ) -> CrystalResult<Renderable> {
         if let Some(vertex_array) = gl.create_vertex_array() {
             gl.bind_vertex_array(Some(&vertex_array));
 
@@ -60,7 +61,7 @@ impl Renderable {
         gl: &Rc<WebGl2RenderingContext>,
         bindings: &[Binding],
         index_buffer: &IndexBuffer,
-    ) -> Result<Renderable, JsValue> {
+    ) -> CrystalResult<Renderable> {
         if let Some(vertex_array) = gl.create_vertex_array() {
             gl.bind_vertex_array(Some(&vertex_array));
 

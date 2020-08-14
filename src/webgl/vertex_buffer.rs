@@ -1,6 +1,6 @@
+use crate::webgl::err::CrystalResult;
 use std::mem::size_of;
 use std::rc::Rc;
-use wasm_bindgen::JsValue;
 use web_sys::{WebGl2RenderingContext, WebGlBuffer};
 
 pub struct VertexBuffer {
@@ -19,7 +19,7 @@ impl VertexBuffer {
     pub(crate) fn from_slice<T>(
         gl: &Rc<WebGl2RenderingContext>,
         data: &[T],
-    ) -> Result<VertexBuffer, JsValue>
+    ) -> CrystalResult<VertexBuffer>
     where
         T: Sized,
     {
@@ -49,7 +49,7 @@ impl VertexBuffer {
         &mut self,
         gl: &Rc<WebGl2RenderingContext>,
         data: &[T],
-    ) -> Result<(), JsValue>
+    ) -> CrystalResult<()>
     where
         T: Sized,
     {

@@ -1,3 +1,4 @@
+use crate::opengl::err::CrystalResult;
 use crate::opengl::index_buffer::IndexBuffer;
 use crate::opengl::vertex_buffer::VertexBuffer;
 use gl;
@@ -23,7 +24,7 @@ impl<'a> Drop for Renderable {
 }
 
 impl Renderable {
-    pub(crate) fn from_bindings(bindings: &[Binding]) -> Result<Renderable, String> {
+    pub(crate) fn from_bindings(bindings: &[Binding]) -> CrystalResult<Renderable> {
         unsafe {
             let mut vertex_array = 0;
             gl::GenVertexArrays(1, &mut vertex_array);
@@ -50,7 +51,7 @@ impl Renderable {
     pub(crate) fn from_bindings_and_index(
         bindings: &[Binding],
         index_buffer: &IndexBuffer,
-    ) -> Result<Renderable, String> {
+    ) -> CrystalResult<Renderable> {
         unsafe {
             let mut vertex_array = 0;
             gl::GenVertexArrays(1, &mut vertex_array);

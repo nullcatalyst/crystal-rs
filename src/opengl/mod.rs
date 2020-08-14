@@ -1,4 +1,5 @@
 mod context;
+mod err;
 mod index_buffer;
 mod renderable;
 mod shader;

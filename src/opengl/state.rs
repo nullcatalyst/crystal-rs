@@ -1,3 +1,4 @@
+use crate::opengl::err::CrystalResult;
 use crate::opengl::texture::Texture;
 use crate::opengl::uniform_buffer::UniformBuffer;
 
@@ -24,7 +25,7 @@ pub struct State {
 }
 
 impl State {
-    pub fn from_desc(desc: &StateDesc) -> Result<State, String> {
+    pub fn from_desc(desc: &StateDesc) -> CrystalResult<State> {
         let mut uniforms = Vec::with_capacity(desc.uniforms.len());
         for uniform in desc.uniforms.iter() {
             uniforms.push(match uniform {

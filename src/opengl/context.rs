@@ -1,3 +1,4 @@
+use crate::opengl::err::CrystalResult;
 use crate::opengl::*;
 use gl;
 use std::ffi::CString;
@@ -8,11 +9,11 @@ use std::ptr::null;
 pub struct Context {}
 
 impl Context {
-    pub fn new() -> Result<Context, String> {
+    pub fn new() -> CrystalResult<Context> {
         Ok(Context {})
     }
 
-    pub fn load_with<F>(load_function: F) -> Result<Context, String>
+    pub fn load_with<F>(load_function: F) -> CrystalResult<Context>
     where
         F: Fn(&str) -> *const std::ffi::c_void,
     {
@@ -25,15 +26,15 @@ impl Context {
         &self,
         vertex_source: &str,
         fragment_source: &str,
-    ) -> Result<Shader, String> {
+    ) -> CrystalResult<Shader> {
         Shader::from_source(vertex_source, fragment_source)
     }
 
-    pub fn create_state(&self, desc: &StateDesc) -> Result<State, String> {
+    pub fn create_state(&self, desc: &StateDesc) -> CrystalResult<State> {
         State::from_desc(desc)
     }
 
-    pub fn create_texture<P>(&self, image_url: P) -> Result<Texture, String>
+    pub fn create_texture<P>(&self, image_url: P) -> CrystalResult<Texture>
     where
         P: AsRef<Path>,
     {
@@ -44,14 +45,14 @@ impl Context {
         &self,
         image_url: P,
         filter: TextureFilter,
-    ) -> Result<Texture, String>
+    ) -> CrystalResult<Texture>
     where
         P: AsRef<Path>,
     {
         Texture::from_path(image_url, filter)
     }
 
-    pub fn create_uniform_buffer<T>(&self, data: &T) -> Result<UniformBuffer, String>
+    pub fn create_uniform_buffer<T>(&self, data: &T) -> CrystalResult<UniformBuffer>
     where
         T: Sized,
     {
@@ -62,7 +63,7 @@ impl Context {
         &self,
         uniform_buffer: &mut UniformBuffer,
         data: &T,
-    ) -> Result<(), String>
+    ) -> CrystalResult<()>
     where
         T: Sized,
     {
@@ -79,7 +80,7 @@ impl Context {
         }
     }
 
-    pub fn create_vertex_buffer<T>(&self, data: &[T]) -> Result<VertexBuffer, String>
+    pub fn create_vertex_buffer<T>(&self, data: &[T]) -> CrystalResult<VertexBuffer>
     where
         T: Sized,
     {
@@ -90,18 +91,18 @@ impl Context {
         &self,
         vertex_buffer: &mut VertexBuffer,
         data: &[T],
-    ) -> Result<(), String>
+    ) -> CrystalResult<()>
     where
         T: Sized,
     {
         vertex_buffer.update_with_slice(data)
     }
 
-    pub fn create_index_buffer<T>(&self, data: &[u16]) -> Result<IndexBuffer, String> {
+    pub fn create_index_buffer<T>(&self, data: &[u16]) -> CrystalResult<IndexBuffer> {
         IndexBuffer::from_slice(data)
     }
 
-    pub fn create_renderable(&self, bindings: &[Binding]) -> Result<Renderable, String> {
+    pub fn create_renderable(&self, bindings: &[Binding]) -> CrystalResult<Renderable> {
         Renderable::from_bindings(bindings)
     }
 
@@ -109,11 +110,11 @@ impl Context {
         &self,
         bindings: &[Binding],
         index_buffer: &IndexBuffer,
-    ) -> Result<Renderable, String> {
+    ) -> CrystalResult<Renderable> {
         Renderable::from_bindings_and_index(bindings, index_buffer)
     }
 
-    pub fn get_uniform(&self, shader: &Shader, uniform_name: &str) -> Result<Location, String> {
+    pub fn get_uniform(&self, shader: &Shader, uniform_name: &str) -> CrystalResult<Location> {
         unsafe {
             let uniform_name_cstr = match CString::new(uniform_name) {
                 Ok(uniform_name) => uniform_name,

@@ -1,7 +1,8 @@
+use crate::webgl::err::CrystalResult;
 use js_sys::Function;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
-use wasm_bindgen::{JsCast, JsValue};
+use wasm_bindgen::JsCast;
 use web_sys::{HtmlImageElement, WebGl2RenderingContext, WebGlTexture};
 
 pub struct Texture {
@@ -19,7 +20,7 @@ impl Texture {
     pub(crate) fn from_url(
         gl: &Rc<WebGl2RenderingContext>,
         image_url: &str,
-    ) -> Result<Texture, JsValue> {
+    ) -> CrystalResult<Texture> {
         if let Some(texture) = gl.create_texture() {
             gl.bind_texture(WebGl2RenderingContext::TEXTURE_2D, Some(&texture));
 

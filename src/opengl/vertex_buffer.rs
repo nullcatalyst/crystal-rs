@@ -1,3 +1,4 @@
+use crate::opengl::err::CrystalResult;
 use gl;
 use std::mem::size_of;
 
@@ -15,7 +16,7 @@ impl<'a> Drop for VertexBuffer {
 }
 
 impl VertexBuffer {
-    pub(crate) fn from_slice<T>(data: &[T]) -> Result<VertexBuffer, String>
+    pub(crate) fn from_slice<T>(data: &[T]) -> CrystalResult<VertexBuffer>
     where
         T: Sized,
     {
@@ -37,10 +38,7 @@ impl VertexBuffer {
         }
     }
 
-    pub(crate) fn update_with_slice<T>(
-        &mut self,
-        data: &[T],
-    ) -> Result<(), String>
+    pub(crate) fn update_with_slice<T>(&mut self, data: &[T]) -> CrystalResult<()>
     where
         T: Sized,
     {

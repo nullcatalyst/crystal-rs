@@ -1,3 +1,4 @@
+use crate::opengl::err::CrystalResult;
 use gl;
 use image;
 use image::RgbaImage;
@@ -22,7 +23,7 @@ impl<'a> Drop for Texture {
 }
 
 impl Texture {
-    pub(crate) fn from_path<P>(file_name: P, filter: TextureFilter) -> Result<Texture, String>
+    pub(crate) fn from_path<P>(file_name: P, filter: TextureFilter) -> CrystalResult<Texture>
     where
         P: AsRef<Path>,
     {

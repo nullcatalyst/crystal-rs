@@ -1,5 +1,5 @@
+use crate::webgl::err::CrystalResult;
 use std::rc::Rc;
-use wasm_bindgen::JsValue;
 use web_sys::{WebGl2RenderingContext, WebGlProgram, WebGlShader};
 
 pub struct Shader {
@@ -18,7 +18,7 @@ impl Shader {
         gl: &Rc<WebGl2RenderingContext>,
         vertex_source: &str,
         fragment_source: &str,
-    ) -> Result<Shader, JsValue> {
+    ) -> CrystalResult<Shader> {
         let vertex_shader =
             compile_shader(gl, WebGl2RenderingContext::VERTEX_SHADER, vertex_source)?;
         let fragment_shader =
@@ -46,7 +46,7 @@ fn compile_shader(
     gl: &WebGl2RenderingContext,
     shader_type: u32,
     shader_source: &str,
-) -> Result<WebGlShader, JsValue> {
+) -> CrystalResult<WebGlShader> {
     if let Some(shader) = gl.create_shader(shader_type) {
         gl.shader_source(&shader, shader_source);
         gl.compile_shader(&shader);

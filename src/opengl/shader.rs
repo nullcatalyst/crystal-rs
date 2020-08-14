@@ -1,3 +1,4 @@
+use crate::opengl::err::CrystalResult;
 use gl;
 use std::ptr::null_mut;
 use std::str;
@@ -15,10 +16,7 @@ impl<'a> Drop for Shader {
 }
 
 impl Shader {
-    pub(crate) fn from_source(
-        vertex_source: &str,
-        fragment_source: &str,
-    ) -> Result<Shader, String> {
+    pub(crate) fn from_source(vertex_source: &str, fragment_source: &str) -> CrystalResult<Shader> {
         let vertex_shader = compile_shader(gl::VERTEX_SHADER, vertex_source)?;
         let fragment_shader = compile_shader(gl::FRAGMENT_SHADER, fragment_source)?;
 
@@ -64,7 +62,7 @@ impl Shader {
     }
 }
 
-fn compile_shader(shader_type: u32, shader_source: &str) -> Result<u32, String> {
+fn compile_shader(shader_type: u32, shader_source: &str) -> CrystalResult<u32> {
     unsafe {
         let shader = gl::CreateShader(shader_type);
         gl::ShaderSource(

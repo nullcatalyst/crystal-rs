@@ -1,3 +1,4 @@
+use crate::opengl::err::CrystalResult;
 use gl;
 use std::mem::size_of;
 
@@ -15,7 +16,7 @@ impl<'a> Drop for IndexBuffer {
 }
 
 impl IndexBuffer {
-    pub(crate) fn from_slice(data: &[u16]) -> Result<IndexBuffer, String> {
+    pub(crate) fn from_slice(data: &[u16]) -> CrystalResult<IndexBuffer> {
         unsafe {
             let mut buffer = 0;
             gl::GenBuffers(1, &mut buffer);

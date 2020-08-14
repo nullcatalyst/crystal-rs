@@ -1,5 +1,5 @@
-#[cfg(feature = "crystal-opengl")]
+#[cfg(feature = "opengl")]
 pub mod opengl;
 
-#[cfg(feature = "crystal-webgl")]
+#[cfg(feature = "webgl")]
 pub mod webgl;

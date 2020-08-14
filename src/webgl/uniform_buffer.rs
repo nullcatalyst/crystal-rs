@@ -1,6 +1,6 @@
+use crate::webgl::err::CrystalResult;
 use std::mem::size_of;
 use std::rc::Rc;
-use wasm_bindgen::JsValue;
 use web_sys::{WebGl2RenderingContext, WebGlBuffer};
 
 #[allow(dead_code)]
@@ -19,7 +19,7 @@ impl UniformBuffer {
     pub(crate) fn from_value<T>(
         gl: &Rc<WebGl2RenderingContext>,
         data: &T,
-    ) -> Result<UniformBuffer, JsValue>
+    ) -> CrystalResult<UniformBuffer>
     where
         T: Sized,
     {

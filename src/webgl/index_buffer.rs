@@ -1,6 +1,6 @@
+use crate::webgl::err::CrystalResult;
 use std::mem::size_of;
 use std::rc::Rc;
-use wasm_bindgen::JsValue;
 use web_sys::{WebGl2RenderingContext, WebGlBuffer};
 
 pub struct IndexBuffer {
@@ -19,7 +19,7 @@ impl IndexBuffer {
     pub(crate) fn from_slice(
         gl: &Rc<WebGl2RenderingContext>,
         data: &[u16],
-    ) -> Result<IndexBuffer, JsValue> {
+    ) -> CrystalResult<IndexBuffer> {
         if let Some(buffer) = gl.create_buffer() {
             gl.bind_buffer(WebGl2RenderingContext::ELEMENT_ARRAY_BUFFER, Some(&buffer));
             gl.buffer_data_with_u8_array(

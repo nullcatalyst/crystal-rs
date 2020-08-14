@@ -1,8 +1,9 @@
+use crate::webgl::err::CrystalResult;
 use crate::webgl::*;
 use js_sys::{Object, Reflect};
 use std::mem::size_of;
 use std::rc::Rc;
-use wasm_bindgen::{JsCast, JsValue};
+use wasm_bindgen::JsCast;
 use web_sys::{HtmlCanvasElement, WebGl2RenderingContext};
 
 pub struct Context {
@@ -10,13 +11,13 @@ pub struct Context {
 }
 
 impl Context {
-    pub fn new(context: WebGl2RenderingContext) -> Result<Context, JsValue> {
+    pub fn new(context: WebGl2RenderingContext) -> CrystalResult<Context> {
         Ok(Context {
             context: Rc::from(context),
         })
     }
 
-    pub fn from_canvas(canvas: HtmlCanvasElement) -> Result<Context, JsValue> {
+    pub fn from_canvas(canvas: HtmlCanvasElement) -> CrystalResult<Context> {
         let context_options = {
             let obj = Object::new();
             Reflect::set(&obj, &"alpha".into(), &false.into())?;
@@ -39,19 +40,19 @@ impl Context {
         &self,
         vertex_source: &str,
         fragment_source: &str,
-    ) -> Result<Shader, JsValue> {
+    ) -> CrystalResult<Shader> {
         Shader::from_source(&self.context, vertex_source, fragment_source)
     }
 
-    pub fn create_state(&self, desc: &StateDesc) -> Result<State, JsValue> {
+    pub fn create_state(&self, desc: &StateDesc) -> CrystalResult<State> {
         State::from_desc(desc)
     }
 
-    pub fn create_texture(&self, image_url: &str) -> Result<Texture, JsValue> {
+    pub fn create_texture(&self, image_url: &str) -> CrystalResult<Texture> {
         Texture::from_url(&self.context, image_url)
     }
 
-    pub fn create_uniform_buffer<T>(&self, data: &T) -> Result<UniformBuffer, JsValue>
+    pub fn create_uniform_buffer<T>(&self, data: &T) -> CrystalResult<UniformBuffer>
     where
         T: Sized,
     {
@@ -62,7 +63,7 @@ impl Context {
         &self,
         uniform_buffer: &UniformBuffer,
         data: &T,
-    ) -> Result<(), String>
+    ) -> CrystalResult<()>
     where
         T: Sized,
     {
@@ -84,7 +85,7 @@ impl Context {
         Ok(())
     }
 
-    pub fn create_vertex_buffer<T>(&self, data: &[T]) -> Result<VertexBuffer, JsValue>
+    pub fn create_vertex_buffer<T>(&self, data: &[T]) -> CrystalResult<VertexBuffer>
     where
         T: Sized,
     {
@@ -95,18 +96,18 @@ impl Context {
         &self,
         vertex_buffer: &mut VertexBuffer,
         data: &[T],
-    ) -> Result<(), JsValue>
+    ) -> CrystalResult<()>
     where
         T: Sized,
     {
         vertex_buffer.update_with_slice(&self.context, data)
     }
 
-    pub fn create_index_buffer<T>(&self, data: &[u16]) -> Result<IndexBuffer, JsValue> {
+    pub fn create_index_buffer<T>(&self, data: &[u16]) -> CrystalResult<IndexBuffer> {
         IndexBuffer::from_slice(&self.context, data)
     }
 
-    pub fn create_renderable(&self, bindings: &[Binding]) -> Result<Renderable, JsValue> {
+    pub fn create_renderable(&self, bindings: &[Binding]) -> CrystalResult<Renderable> {
         Renderable::from_bindings(&self.context, bindings)
     }
 
@@ -114,11 +115,11 @@ impl Context {
         &self,
         bindings: &[Binding],
         index_buffer: &IndexBuffer,
-    ) -> Result<Renderable, JsValue> {
+    ) -> CrystalResult<Renderable> {
         Renderable::from_bindings_and_index(&self.context, bindings, index_buffer)
     }
 
-    pub fn get_uniform(&self, shader: &Shader, uniform_name: &str) -> Result<Location, String> {
+    pub fn get_uniform(&self, shader: &Shader, uniform_name: &str) -> CrystalResult<Location> {
         let location = self
             .context
             .get_uniform_block_index(&shader.program, uniform_name);
@@ -137,7 +138,8 @@ impl Context {
             "shader uniform \"{}\" not found {}",
             uniform_name,
             self.context.get_error()
-        ))
+        )
+        .into())
     }
 
     pub fn clear(&self) {

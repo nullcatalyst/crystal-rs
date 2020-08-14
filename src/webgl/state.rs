@@ -1,6 +1,6 @@
+use crate::webgl::err::CrystalResult;
 use crate::webgl::texture::Texture;
 use crate::webgl::uniform_buffer::UniformBuffer;
-use wasm_bindgen::JsValue;
 use web_sys::{WebGlBuffer, WebGlTexture, WebGlUniformLocation};
 
 #[derive(Clone)]
@@ -30,7 +30,7 @@ pub struct State {
 }
 
 impl State {
-    pub fn from_desc(desc: &StateDesc) -> Result<State, JsValue> {
+    pub fn from_desc(desc: &StateDesc) -> CrystalResult<State> {
         let mut uniforms = Vec::with_capacity(desc.uniforms.len());
         for uniform in desc.uniforms.iter() {
             uniforms.push(match uniform {
