@@ -6,20 +6,46 @@ use std::mem::size_of;
 use std::path::Path;
 use std::ptr::null;
 
-pub struct Context {}
+#[cfg(feature = "use-sdl2")]
+use sdl2;
+
+pub struct Context {
+    #[cfg(feature = "use-sdl2")]
+    _sdl_gl: Option<sdl2::video::GLContext>,
+}
 
 impl Context {
     pub fn new() -> CrystalResult<Context> {
-        Ok(Context {})
+        Ok(Context {
+            #[cfg(feature = "use-sdl2")]
+            _sdl_gl: None,
+        })
     }
 
-    pub fn load_with<F>(load_function: F) -> CrystalResult<Context>
+    pub fn with_loader<F>(load_function: F) -> CrystalResult<Context>
     where
         F: Fn(&str) -> *const std::ffi::c_void,
     {
         gl::load_with(load_function);
 
-        Ok(Context {})
+        Ok(Context {
+            #[cfg(feature = "use-sdl2")]
+            _sdl_gl: None,
+        })
+    }
+
+    #[cfg(feature = "use-sdl2")]
+    pub fn with_sdl2_window(
+        video_subsystem: &sdl2::VideoSubsystem,
+        window: &sdl2::video::Window,
+    ) -> CrystalResult<Context> {
+        let sdl2_gl = window.gl_create_context()?;
+
+        gl::load_with(|name| video_subsystem.gl_get_proc_address(name) as *const _);
+
+        Ok(Context {
+            _sdl_gl: Some(sdl2_gl),
+        })
     }
 
     pub fn create_shader<'a>(
