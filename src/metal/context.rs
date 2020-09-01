@@ -1,9 +1,9 @@
 use crate::metal::err::Result;
 use crate::metal::*;
+use crate::PipelineDesc;
 use cocoa::{appkit::NSView, appkit::NSWindow, base::id as cocoa_id};
 use metal;
 use objc::runtime::YES;
-use std::path::Path;
 
 #[cfg(feature = "use-sdl2")]
 use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
@@ -67,7 +67,7 @@ impl Context {
     }
 
     #[cfg(feature = "use-winit")]
-    pub fn from_winit_window(window: &winit::window::Window) -> Result<Context> {
+    pub fn with_winit_window(window: &winit::window::Window) -> Result<Context> {
         let device = if let Some(device) = metal::Device::system_default() {
             device
         } else {
@@ -103,10 +103,7 @@ impl Context {
         CommandBuffer::new(drawable, self.command_queue.new_command_buffer())
     }
 
-    pub fn set_shader_library_location<P>(&mut self, library_path: P) -> Result<()>
-    where
-        P: AsRef<Path>,
-    {
+    pub fn set_shader_library_location(&mut self, library_path: &str) -> Result<()> {
         let library = self.device.new_library_with_file(library_path)?;
         self.library = Some(library);
 
@@ -171,18 +168,18 @@ impl Context {
     //     }
     // }
 
-    pub fn create_vertex_buffer_from_capacity<T>(&self, count: usize) -> Result<VertexBuffer>
+    pub fn create_vertex_buffer_with_capacity<T>(&self, count: usize) -> Result<VertexBuffer>
     where
         T: Sized,
     {
-        VertexBuffer::from_capacity::<T>(&self.device, count)
+        VertexBuffer::with_capacity::<T>(&self.device, count)
     }
 
-    pub fn create_vertex_buffer_from_data<T>(&self, data: &[T]) -> Result<VertexBuffer>
+    pub fn create_vertex_buffer_with_data<T>(&self, data: &[T]) -> Result<VertexBuffer>
     where
         T: Sized,
     {
-        VertexBuffer::from_data(&self.device, data)
+        VertexBuffer::with_data(&self.device, data)
     }
 
     pub fn update_vertex_buffer<T>(

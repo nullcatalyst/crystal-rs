@@ -1,25 +1,20 @@
+mod command_buffer;
 mod context;
 mod err;
-mod index_buffer;
+mod pipeline;
+// mod index_buffer;
 mod renderable;
 mod shader;
-mod state;
-mod texture;
-mod uniform_buffer;
+// mod texture;
+// mod uniform_buffer;
 mod vertex_buffer;
 
-pub use crate::opengl::context::*;
-pub use crate::opengl::index_buffer::*;
-pub use crate::opengl::renderable::*;
-pub use crate::opengl::shader::*;
-pub use crate::opengl::state::*;
-pub use crate::opengl::texture::*;
-pub use crate::opengl::uniform_buffer::*;
-pub use crate::opengl::vertex_buffer::*;
-
-#[macro_export]
-macro_rules! glsl_version {
-    () => {
-        "#version 330"
-    };
-}
+pub use command_buffer::*;
+pub use context::*;
+pub use pipeline::*;
+// pub use index_buffer::*;
+pub use renderable::*;
+pub use shader::*;
+// pub use texture::*;
+// pub use uniform_buffer::*;
+pub use vertex_buffer::*;

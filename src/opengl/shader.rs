@@ -1,22 +1,15 @@
-use crate::opengl::err::CrystalResult;
+use crate::opengl::err::Result;
 use gl;
 use std::ptr::null_mut;
+use std::rc::Rc;
 use std::str;
 
 pub struct Shader {
-    pub(crate) program: u32,
-}
-
-impl<'a> Drop for Shader {
-    fn drop(&mut self) {
-        unsafe {
-            gl::DeleteProgram(self.program);
-        }
-    }
+    pub(crate) program: Rc<Program>,
 }
 
 impl Shader {
-    pub(crate) fn from_source(vertex_source: &str, fragment_source: &str) -> CrystalResult<Shader> {
+    pub(crate) fn new(vertex_source: &str, fragment_source: &str) -> Result<Shader> {
         let vertex_shader = compile_shader(gl::VERTEX_SHADER, vertex_source)?;
         let fragment_shader = compile_shader(gl::FRAGMENT_SHADER, fragment_source)?;
 
@@ -57,12 +50,14 @@ impl Shader {
                 return Err(message);
             }
 
-            Ok(Shader { program })
+            Ok(Shader {
+                program: Rc::from(Program(program)),
+            })
         }
     }
 }
 
-fn compile_shader(shader_type: u32, shader_source: &str) -> CrystalResult<u32> {
+fn compile_shader(shader_type: u32, shader_source: &str) -> Result<u32> {
     unsafe {
         let shader = gl::CreateShader(shader_type);
         gl::ShaderSource(
@@ -112,5 +107,15 @@ fn compile_shader(shader_type: u32, shader_source: &str) -> CrystalResult<u32> {
         }
 
         Ok(shader)
+    }
+}
+
+pub(crate) struct Program(pub(crate) u32);
+
+impl<'a> Drop for Program {
+    fn drop(&mut self) {
+        unsafe {
+            gl::DeleteProgram(self.0);
+        }
     }
 }

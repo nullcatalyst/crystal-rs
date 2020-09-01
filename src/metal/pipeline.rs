@@ -1,14 +1,6 @@
 use crate::metal::err::Result;
 use crate::metal::shader::Shader;
-use crate::shared::Binding;
-
-#[derive(Default, Clone, Copy)]
-pub struct PipelineDesc<'a> {
-    pub depth_test: bool,
-    pub depth_write: bool,
-    pub alpha_blend: bool,
-    pub bindings: &'a [Binding],
-}
+use crate::shared::{Binding, PipelineDesc};
 
 pub struct Pipeline {
     // pub(crate) clear_color: Option<(f32, f32, f32, f32)>,

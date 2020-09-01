@@ -1,1 +1,1 @@
-pub type CrystalResult<T> = std::result::Result<T, String>;
+pub type Result<T> = std::result::Result<T, String>;

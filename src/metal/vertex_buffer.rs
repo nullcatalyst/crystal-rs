@@ -13,7 +13,7 @@ pub struct VertexBuffer {
 }
 
 impl VertexBuffer {
-    pub(crate) fn from_capacity<T>(device: &metal::Device, count: usize) -> Result<VertexBuffer>
+    pub(crate) fn with_capacity<T>(device: &metal::Device, count: usize) -> Result<VertexBuffer>
     where
         T: Sized,
     {
@@ -32,7 +32,7 @@ impl VertexBuffer {
         })
     }
 
-    pub(crate) fn from_data<T>(device: &metal::Device, data: &[T]) -> Result<VertexBuffer>
+    pub(crate) fn with_data<T>(device: &metal::Device, data: &[T]) -> Result<VertexBuffer>
     where
         T: Sized,
     {

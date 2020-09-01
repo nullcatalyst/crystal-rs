@@ -9,21 +9,6 @@ pub struct Renderable {
 
 impl Renderable {
     pub(crate) fn new(vertex_buffers: &[(u32, &VertexBuffer)]) -> Result<Renderable> {
-        // let mut vertex_buffers = Vec::<metal::Buffer>::with_capacity(bindings.len());
-
-        // 'next_buffer: for vertex_buffer in bindings {
-        //     let new_buffer = &vertex_buffer.buffer.buffer;
-        //     for existing_buffer in &vertex_buffers {
-        //         if new_buffer.as_ptr() == existing_buffer.as_ptr() {
-        //             continue 'next_buffer;
-        //         }
-        //     }
-
-        //     vertex_buffers.push(new_buffer.clone());
-        // }
-
-        // Ok(Renderable { vertex_buffers })
-
         Ok(Renderable {
             vertex_buffers: vertex_buffers
                 .iter()
