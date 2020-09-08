@@ -1,3 +1,12 @@
+pub(crate) mod image;
+
+#[derive(Clone, Copy)]
+pub enum TextureFilter {
+    Nearest,
+    Linear,
+    MipMap,
+}
+
 #[derive(Default, Clone, Copy)]
 pub struct PipelineDesc<'a> {
     pub depth_test: bool,

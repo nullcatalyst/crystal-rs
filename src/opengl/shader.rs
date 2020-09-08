@@ -1,8 +1,22 @@
 use crate::opengl::err::Result;
 use gl;
+use std::ffi::CString;
+use std::path::PathBuf;
 use std::ptr::null_mut;
 use std::rc::Rc;
 use std::str;
+
+pub struct Library {
+    pub(crate) library_path: PathBuf,
+}
+
+impl Library {
+    pub(crate) fn new(library_path: &str) -> Result<Library> {
+        Ok(Library {
+            library_path: PathBuf::from(library_path),
+        })
+    }
+}
 
 pub struct Shader {
     pub(crate) program: Rc<Program>,
@@ -53,6 +67,26 @@ impl Shader {
             Ok(Shader {
                 program: Rc::from(Program(program)),
             })
+        }
+    }
+
+    /// THIS IS AN OPENGL ONLY API.
+    pub fn get_texture_location(&self, uniform_name: &str) -> Result<i32> {
+        let location = unsafe {
+            let uniform_name_cstr = match CString::new(uniform_name) {
+                Ok(uniform_name) => uniform_name,
+                Err(..) => {
+                    return Err("converting shader name to c string".into());
+                }
+            };
+
+            gl::GetUniformLocation(self.program.0, uniform_name_cstr.as_ptr())
+        };
+
+        if location >= 0 {
+            Ok(location)
+        } else {
+            Err(format!("shader texture \"{}\" not found", uniform_name))
         }
     }
 }

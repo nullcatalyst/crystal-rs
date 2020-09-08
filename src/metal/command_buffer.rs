@@ -57,7 +57,20 @@ impl CommandBuffer {
         self.encoder = Some(encoder);
     }
 
-    pub fn draw(&self, renderable: &Renderable, vertex_count: usize, instance_count: usize) {
+    pub fn use_uniform(&mut self, uniform_buffer: &UniformBuffer, id: u32) {
+        if let Some(encoder) = &self.encoder {
+            encoder.set_vertex_buffer(id as u64, Some(&uniform_buffer.buffer), 0);
+            encoder.set_fragment_buffer(id as u64, Some(&uniform_buffer.buffer), 0);
+        }
+    }
+
+    pub fn use_texture(&mut self, texture: &Texture, id: u32) {
+        if let Some(encoder) = &self.encoder {
+            encoder.set_fragment_texture(id as u64, Some(&texture.texture));
+        }
+    }
+
+    pub fn draw(&mut self, renderable: &Renderable, vertex_count: usize, instance_count: usize) {
         if let Some(encoder) = &self.encoder {
             for (i, buffer) in &renderable.vertex_buffers {
                 encoder.set_vertex_buffer(*i as u64, Some(&buffer), 0);
@@ -72,9 +85,7 @@ impl CommandBuffer {
         }
     }
 
-    // pub fn draw_indexed(&self, renderable: &Renderable, index_count: usize, instance_count: usize) {
-
-    // }
+    // pub fn draw_indexed(&self, renderable: &Renderable, index_count: usize, instance_count: usize) {}
 }
 
 impl Drop for CommandBuffer {

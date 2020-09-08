@@ -5,50 +5,51 @@ use metal;
 use std::mem::size_of;
 use std::ptr::null_mut;
 
-pub struct VertexBuffer {
+pub struct UniformBuffer {
     pub(crate) buffer: metal::Buffer,
     /// The number of bytes that can be stored in this buffer.
     pub(crate) capacity: usize,
 }
 
-impl VertexBuffer {
-    pub(crate) fn with_capacity(device: &metal::Device, capacity: usize) -> Result<VertexBuffer> {
+impl UniformBuffer {
+    pub(crate) fn with_capacity(device: &metal::Device, capacity: usize) -> Result<UniformBuffer> {
         let buffer = device.new_buffer(
             capacity as u64,
             metal::MTLResourceOptions::CPUCacheModeDefaultCache
                 | metal::MTLResourceOptions::StorageModeManaged,
         );
 
-        Ok(VertexBuffer { buffer, capacity })
+        Ok(UniformBuffer { buffer, capacity })
     }
 
-    pub(crate) fn with_data<T>(device: &metal::Device, data: &[T]) -> Result<VertexBuffer>
+    pub(crate) fn with_data<T>(device: &metal::Device, data: &T) -> Result<UniformBuffer>
     where
         T: Sized,
     {
-        let capacity = data.len() * size_of::<T>();
+        let capacity = size_of::<T>();
         let buffer = device.new_buffer_with_data(
-            data.as_ptr() as *const _,
+            data as *const T as *const _,
             capacity as u64,
             metal::MTLResourceOptions::CPUCacheModeDefaultCache
+                // metal::MTLResourceOptions::CPUCacheModeWriteCombined
                 | metal::MTLResourceOptions::StorageModeManaged,
         );
 
-        Ok(VertexBuffer { buffer, capacity })
+        Ok(UniformBuffer { buffer, capacity })
     }
 
-    pub(crate) fn update<T>(&mut self, data: &[T]) -> Result<()>
+    pub(crate) fn update<T>(&mut self, data: &T) -> Result<()>
     where
         T: Sized,
     {
-        let length = data.len() * size_of::<T>();
+        let length = size_of::<T>();
         if length > self.capacity {
-            return Err("updating vertex buffer: new data is longer than buffer capacity".into());
+            return Err("updating uniform buffer: new data is longer than buffer capacity".into());
         }
 
         let p = self.buffer.contents();
         unsafe {
-            std::ptr::copy_nonoverlapping(data.as_ptr(), p as *mut _, data.len());
+            std::ptr::copy_nonoverlapping(data, p as *mut _, 1);
         }
 
         self.buffer
@@ -56,11 +57,15 @@ impl VertexBuffer {
 
         Ok(())
     }
+
+    pub fn capacity(&self) -> usize {
+        self.capacity
+    }
 }
 
-impl Default for VertexBuffer {
-    fn default() -> VertexBuffer {
-        VertexBuffer {
+impl Default for UniformBuffer {
+    fn default() -> UniformBuffer {
+        UniformBuffer {
             buffer: unsafe { metal::Buffer::from_ptr(null_mut()) },
             capacity: 0,
         }

@@ -8,18 +8,11 @@ pub struct VertexBuffer {
     pub(crate) buffer: Rc<Buffer>,
     /// The number of bytes that can be stored in this buffer.
     pub(crate) capacity: usize,
-    /// The number of vertices that can be stored in this buffer.
-    pub(crate) count: usize,
 }
 
 impl VertexBuffer {
-    pub(crate) fn with_capacity<T>(count: usize) -> Result<VertexBuffer>
-    where
-        T: Sized,
-    {
+    pub(crate) fn with_capacity(capacity: usize) -> Result<VertexBuffer> {
         unsafe {
-            let capacity = count * size_of::<T>();
-
             let mut buffer = 0;
             gl::GenBuffers(1, &mut buffer);
             gl::BindBuffer(gl::ARRAY_BUFFER, buffer);
@@ -33,7 +26,6 @@ impl VertexBuffer {
             Ok(VertexBuffer {
                 buffer: Rc::from(Buffer(buffer)),
                 capacity,
-                count,
             })
         }
     }
@@ -43,8 +35,7 @@ impl VertexBuffer {
         T: Sized,
     {
         unsafe {
-            let count = data.len();
-            let capacity = count * size_of::<T>();
+            let capacity = data.len() * size_of::<T>();
 
             let mut buffer = 0;
             gl::GenBuffers(1, &mut buffer);
@@ -59,7 +50,6 @@ impl VertexBuffer {
             Ok(VertexBuffer {
                 buffer: Rc::from(Buffer(buffer)),
                 capacity,
-                count,
             })
         }
     }
@@ -84,14 +74,8 @@ impl VertexBuffer {
                 gl::DYNAMIC_DRAW,
             );
 
-            self.count = data.len();
-
             Ok(())
         }
-    }
-
-    pub fn count(&self) -> usize {
-        self.count
     }
 }
 

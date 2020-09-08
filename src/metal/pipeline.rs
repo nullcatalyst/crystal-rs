@@ -1,12 +1,9 @@
 use crate::metal::err::Result;
 use crate::metal::shader::Shader;
-use crate::shared::{Binding, PipelineDesc};
+use crate::shared::PipelineDesc;
 
 pub struct Pipeline {
-    // pub(crate) clear_color: Option<(f32, f32, f32, f32)>,
-    // pub(crate) clear_depth: Option<f32>,
     pub(crate) pipeline_state: metal::RenderPipelineState,
-    // pub(crate) bindings: Vec<Binding>,
 }
 
 impl Pipeline {
@@ -60,9 +57,6 @@ impl Pipeline {
 
         let pipeline_state = device.new_render_pipeline_state(&pipeline_state_desc)?;
 
-        Ok(Pipeline {
-            // bindings: Vec::from(desc.bindings),
-            pipeline_state,
-        })
+        Ok(Pipeline { pipeline_state })
     }
 }

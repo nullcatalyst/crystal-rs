@@ -57,7 +57,15 @@ impl CommandBuffer {
         self.bindings = pipeline.bindings.clone();
     }
 
-    pub fn draw(&self, renderable: &Renderable, vertex_count: usize, instance_count: usize) {
+    pub fn use_texture(&mut self, texture: &Texture, id: i32) {
+        unsafe {
+            gl::Uniform1i(id, 0);
+            gl::ActiveTexture(gl::TEXTURE0);
+            gl::BindTexture(gl::TEXTURE_2D, texture.texture);
+        }
+    }
+
+    pub fn draw(&mut self, renderable: &Renderable, vertex_count: usize, instance_count: usize) {
         let mut vertex_arrays = renderable.vertex_arrays.take();
         match vertex_arrays
             .iter()
