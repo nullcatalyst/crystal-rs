@@ -1,4 +1,5 @@
 use crate::opengl::err::Result;
+use crate::opengl::internal::Buffer;
 use gl;
 use std::mem::size_of;
 use std::ptr::null;
@@ -75,16 +76,6 @@ impl VertexBuffer {
             );
 
             Ok(())
-        }
-    }
-}
-
-pub(crate) struct Buffer(pub(crate) u32);
-
-impl<'a> Drop for Buffer {
-    fn drop(&mut self) {
-        unsafe {
-            gl::DeleteBuffers(1, &self.0);
         }
     }
 }

@@ -1,19 +1,23 @@
 use crate::opengl::err::Result;
+use crate::opengl::internal::*;
 use crate::opengl::*;
 use crate::Binding;
+use std::rc::Rc;
 
 pub struct CommandBuffer {
     pub(crate) clear_color: Option<(f32, f32, f32, f32)>,
-
     pub(crate) pipeline_index: u32,
+    // A reference to the shader program is needed to be able to set the uniform block binding.
+    pub(crate) shader_program: Rc<Program>,
     pub(crate) bindings: Vec<Binding>,
 }
 
 impl CommandBuffer {
     pub(crate) fn new() -> Result<CommandBuffer> {
         Ok(CommandBuffer {
-            pipeline_index: 0,
             clear_color: None,
+            pipeline_index: 0,
+            shader_program: Rc::from(Program(0)),
             bindings: Vec::new(),
         })
     }
@@ -54,7 +58,15 @@ impl CommandBuffer {
         }
 
         self.pipeline_index = pipeline.index;
+        self.shader_program = Rc::clone(&pipeline.shader_program);
         self.bindings = pipeline.bindings.clone();
+    }
+
+    pub fn use_uniform(&mut self, uniform_buffer: &UniformBuffer, id: u32) {
+        unsafe {
+            gl::BindBufferBase(gl::UNIFORM_BUFFER, id, uniform_buffer.buffer.0);
+            gl::UniformBlockBinding(self.shader_program.0, id, id);
+        }
     }
 
     pub fn use_texture(&mut self, texture: &Texture, id: i32) {

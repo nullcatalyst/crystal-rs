@@ -1,5 +1,6 @@
 use crate::opengl::err::Result;
-use crate::opengl::{Program, Shader};
+use crate::opengl::internal::Program;
+use crate::opengl::Shader;
 use crate::shared::{Binding, PipelineDesc};
 use std::rc::Rc;
 

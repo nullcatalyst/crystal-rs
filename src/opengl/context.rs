@@ -81,6 +81,31 @@ impl Context {
         Texture::new(image_path, TextureFilter::Nearest)
     }
 
+    pub fn create_uniform_buffer_with_capacity(
+        &mut self,
+        capacity: usize,
+    ) -> Result<UniformBuffer> {
+        UniformBuffer::with_capacity(capacity)
+    }
+
+    pub fn create_uniform_buffer_with_value<T>(&mut self, value: &T) -> Result<UniformBuffer>
+    where
+        T: Sized,
+    {
+        UniformBuffer::with_data(value)
+    }
+
+    pub fn update_uniform_buffer<T>(
+        &mut self,
+        uniform_buffer: &mut UniformBuffer,
+        data: &T,
+    ) -> Result<()>
+    where
+        T: Sized,
+    {
+        uniform_buffer.update(data)
+    }
+
     pub fn create_texture_with_filter(
         &mut self,
         image_path: &str,

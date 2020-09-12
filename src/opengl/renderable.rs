@@ -1,5 +1,6 @@
 use crate::opengl::err::Result;
-use crate::opengl::{Buffer, VertexBuffer};
+use crate::opengl::internal::Buffer;
+use crate::opengl::VertexBuffer;
 use std::cell::Cell;
 use std::rc::Rc;
 

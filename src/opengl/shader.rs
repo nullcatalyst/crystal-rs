@@ -1,4 +1,5 @@
 use crate::opengl::err::Result;
+use crate::opengl::internal::Program;
 use gl;
 use std::ffi::CString;
 use std::path::PathBuf;
@@ -70,23 +71,43 @@ impl Shader {
         }
     }
 
-    /// THIS IS AN OPENGL ONLY API.
-    pub fn get_texture_location(&self, uniform_name: &str) -> Result<i32> {
+    /// This is an OPENGL ONLY API, and is only needed for a subset of OpenGL versions.
+    pub fn get_uniform_location(&self, uniform_name: &str) -> Result<u32> {
         let location = unsafe {
             let uniform_name_cstr = match CString::new(uniform_name) {
                 Ok(uniform_name) => uniform_name,
                 Err(..) => {
-                    return Err("converting shader name to c string".into());
+                    return Err("converting uniform name to C string".into());
                 }
             };
 
-            gl::GetUniformLocation(self.program.0, uniform_name_cstr.as_ptr())
+            gl::GetUniformBlockIndex(self.program.0, uniform_name_cstr.as_ptr())
+        };
+
+        if location != gl::INVALID_INDEX {
+            Ok(location)
+        } else {
+            Err(format!("shader uniform \"{}\" not found", uniform_name))
+        }
+    }
+
+    /// This is an OPENGL ONLY API, and is only needed for a subset of OpenGL versions.
+    pub fn get_texture_location(&self, texture_name: &str) -> Result<i32> {
+        let location = unsafe {
+            let texture_name_cstr = match CString::new(texture_name) {
+                Ok(texture_name) => texture_name,
+                Err(..) => {
+                    return Err("converting texture name to C string".into());
+                }
+            };
+
+            gl::GetUniformLocation(self.program.0, texture_name_cstr.as_ptr())
         };
 
         if location >= 0 {
             Ok(location)
         } else {
-            Err(format!("shader texture \"{}\" not found", uniform_name))
+            Err(format!("shader texture \"{}\" not found", texture_name))
         }
     }
 }
@@ -141,15 +162,5 @@ fn compile_shader(shader_type: u32, shader_source: &str) -> Result<u32> {
         }
 
         Ok(shader)
-    }
-}
-
-pub(crate) struct Program(pub(crate) u32);
-
-impl<'a> Drop for Program {
-    fn drop(&mut self) {
-        unsafe {
-            gl::DeleteProgram(self.0);
-        }
     }
 }
