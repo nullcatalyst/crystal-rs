@@ -57,16 +57,16 @@ impl CommandBuffer {
         self.encoder = Some(encoder);
     }
 
-    pub fn use_uniform(&mut self, uniform_buffer: &UniformBuffer, id: u32) {
+    pub fn use_uniform(&mut self, uniform_buffer: &UniformBuffer, location: u32, _binding: u32) {
         if let Some(encoder) = &self.encoder {
-            encoder.set_vertex_buffer(id as u64, Some(&uniform_buffer.buffer), 0);
-            encoder.set_fragment_buffer(id as u64, Some(&uniform_buffer.buffer), 0);
+            encoder.set_vertex_buffer(location as u64, Some(&uniform_buffer.buffer), 0);
+            encoder.set_fragment_buffer(location as u64, Some(&uniform_buffer.buffer), 0);
         }
     }
 
-    pub fn use_texture(&mut self, texture: &Texture, id: u32) {
+    pub fn use_texture(&mut self, texture: &Texture, location: u32) {
         if let Some(encoder) = &self.encoder {
-            encoder.set_fragment_texture(id as u64, Some(&texture.texture));
+            encoder.set_fragment_texture(location as u64, Some(&texture.texture));
         }
     }
 

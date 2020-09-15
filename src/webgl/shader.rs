@@ -1,24 +1,33 @@
-use crate::webgl::err::CrystalResult;
+use crate::webgl::err::Result;
+use crate::webgl::internal::Program;
 use std::rc::Rc;
-use web_sys::{WebGl2RenderingContext, WebGlProgram, WebGlShader};
+use std::str;
+use web_sys::{WebGl2RenderingContext, WebGlShader, WebGlUniformLocation};
 
-pub struct Shader {
-    pub(crate) context: Rc<WebGl2RenderingContext>,
-    pub(crate) program: WebGlProgram,
+pub struct Library {
+    #[allow(dead_code)]
+    pub(crate) library_path: String,
 }
 
-impl<'a> Drop for Shader {
-    fn drop(&mut self) {
-        self.context.delete_program(Some(&self.program));
+impl Library {
+    pub(crate) fn new(library_path: &str) -> Result<Library> {
+        Ok(Library {
+            library_path: library_path.into(),
+        })
     }
 }
 
+pub struct Shader {
+    pub(crate) context: Rc<WebGl2RenderingContext>,
+    pub(crate) program: Rc<Program>,
+}
+
 impl Shader {
-    pub(crate) fn from_source(
+    pub(crate) fn new(
         gl: &Rc<WebGl2RenderingContext>,
         vertex_source: &str,
         fragment_source: &str,
-    ) -> CrystalResult<Shader> {
+    ) -> Result<Shader> {
         let vertex_shader =
             compile_shader(gl, WebGl2RenderingContext::VERTEX_SHADER, vertex_source)?;
         let fragment_shader =
@@ -34,10 +43,39 @@ impl Shader {
             }
             Ok(Shader {
                 context: Rc::clone(gl),
-                program,
+                program: Rc::from(Program {
+                    context: Rc::clone(gl),
+                    program,
+                }),
             })
         } else {
-            Err("failed to create shader program".into())
+            Err("creating shader program".into())
+        }
+    }
+
+    /// This is an OPENGL ONLY API, and is only needed for a subset of OpenGL
+    /// versions.
+    pub fn get_uniform_location(&self, uniform_name: &str) -> Result<u32> {
+        let gl = &self.context;
+        let location = gl.get_uniform_block_index(&self.program.program, uniform_name);
+
+        if location != WebGl2RenderingContext::INVALID_INDEX {
+            Ok(location)
+        } else {
+            Err(format!("shader uniform \"{}\" not found", uniform_name).into())
+        }
+    }
+
+    /// This is an WEBGL ONLY API, and may only needed for a subset of WebGL
+    /// versions.
+    pub fn get_texture_location(&self, texture_name: &str) -> Result<WebGlUniformLocation> {
+        if let Some(location) = self
+            .context
+            .get_uniform_location(&self.program.program, texture_name)
+        {
+            Ok(location)
+        } else {
+            Err(format!("shader texture \"{}\" not found", texture_name).into())
         }
     }
 }
@@ -46,7 +84,7 @@ fn compile_shader(
     gl: &WebGl2RenderingContext,
     shader_type: u32,
     shader_source: &str,
-) -> CrystalResult<WebGlShader> {
+) -> Result<WebGlShader> {
     if let Some(shader) = gl.create_shader(shader_type) {
         gl.shader_source(&shader, shader_source);
         gl.compile_shader(&shader);
@@ -55,6 +93,7 @@ fn compile_shader(
                 return Err(log.into());
             }
         }
+
         Ok(shader)
     } else {
         Err("failed to create shader".into())

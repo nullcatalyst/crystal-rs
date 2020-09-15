@@ -40,8 +40,8 @@ impl Shader {
                 let mut info_log_length = 0;
                 gl::GetProgramiv(program, gl::INFO_LOG_LENGTH, &mut info_log_length);
 
-                // Info log length includes the null terminator, so 1 means that the info log is an
-                // empty string.
+                // Info log length includes the null terminator, so 1 means that
+                // the info log is an empty string.
                 let message = if info_log_length > 1 {
                     let mut info_log_buffer = Vec::with_capacity(info_log_length as usize);
                     info_log_buffer.set_len(info_log_length as usize);
@@ -71,7 +71,8 @@ impl Shader {
         }
     }
 
-    /// This is an OPENGL ONLY API, and is only needed for a subset of OpenGL versions.
+    /// This is an OPENGL ONLY API, and is only needed for a subset of OpenGL
+    /// versions.
     pub fn get_uniform_location(&self, uniform_name: &str) -> Result<u32> {
         let location = unsafe {
             let uniform_name_cstr = match CString::new(uniform_name) {
@@ -91,7 +92,8 @@ impl Shader {
         }
     }
 
-    /// This is an OPENGL ONLY API, and is only needed for a subset of OpenGL versions.
+    /// This is an OPENGL ONLY API, and is only needed for a subset of OpenGL
+    /// versions.
     pub fn get_texture_location(&self, texture_name: &str) -> Result<i32> {
         let location = unsafe {
             let texture_name_cstr = match CString::new(texture_name) {

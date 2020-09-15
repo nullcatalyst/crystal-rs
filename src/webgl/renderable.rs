@@ -1,98 +1,34 @@
-use crate::webgl::err::CrystalResult;
-use crate::webgl::index_buffer::IndexBuffer;
-use crate::webgl::vertex_buffer::VertexBuffer;
+use crate::webgl::err::Result;
+use crate::webgl::internal::Buffer;
+use crate::webgl::VertexBuffer;
+use std::cell::Cell;
 use std::rc::Rc;
 use web_sys::{WebGl2RenderingContext, WebGlVertexArrayObject};
 
-pub struct Binding<'a> {
-    pub attribute: u32,
-    pub buffer: &'a VertexBuffer,
-    pub offset: usize,
-    pub stride: usize,
-    pub instanced: bool,
+pub struct Renderable {
+    pub(crate) vertex_arrays: Cell<Vec<(u32, VertexArray)>>,
+    pub(crate) vertex_buffers: Vec<(u32, Rc<Buffer>)>,
 }
 
-pub struct Renderable {
+impl Renderable {
+    pub(crate) fn new(vertex_buffers: &[(u32, &VertexBuffer)]) -> Result<Renderable> {
+        Ok(Renderable {
+            vertex_arrays: Cell::from(Vec::new()),
+            vertex_buffers: vertex_buffers
+                .iter()
+                .map(|(i, vertex_buffer)| (*i, vertex_buffer.buffer.clone()))
+                .collect(),
+        })
+    }
+}
+
+pub(crate) struct VertexArray {
     pub(crate) context: Rc<WebGl2RenderingContext>,
     pub(crate) vertex_array: WebGlVertexArrayObject,
 }
 
-impl<'a> Drop for Renderable {
+impl<'a> Drop for VertexArray {
     fn drop(&mut self) {
         self.context.delete_vertex_array(Some(&self.vertex_array));
-    }
-}
-
-impl Renderable {
-    pub(crate) fn from_bindings(
-        gl: &Rc<WebGl2RenderingContext>,
-        bindings: &[Binding],
-    ) -> CrystalResult<Renderable> {
-        if let Some(vertex_array) = gl.create_vertex_array() {
-            gl.bind_vertex_array(Some(&vertex_array));
-
-            for binding in bindings {
-                gl.bind_buffer(
-                    WebGl2RenderingContext::ARRAY_BUFFER,
-                    Some(&binding.buffer.buffer),
-                );
-                gl.vertex_attrib_pointer_with_i32(
-                    binding.attribute,
-                    4,
-                    WebGl2RenderingContext::FLOAT,
-                    false,
-                    binding.stride as i32,
-                    binding.offset as i32,
-                );
-                gl.vertex_attrib_divisor(binding.attribute, if binding.instanced { 1 } else { 0 });
-                gl.enable_vertex_attrib_array(binding.attribute);
-            }
-
-            Ok(Renderable {
-                context: Rc::clone(gl),
-                vertex_array,
-            })
-        } else {
-            Err("creating vertex array object".into())
-        }
-    }
-
-    pub(crate) fn from_bindings_and_index(
-        gl: &Rc<WebGl2RenderingContext>,
-        bindings: &[Binding],
-        index_buffer: &IndexBuffer,
-    ) -> CrystalResult<Renderable> {
-        if let Some(vertex_array) = gl.create_vertex_array() {
-            gl.bind_vertex_array(Some(&vertex_array));
-
-            for binding in bindings {
-                gl.bind_buffer(
-                    WebGl2RenderingContext::ARRAY_BUFFER,
-                    Some(&binding.buffer.buffer),
-                );
-                gl.vertex_attrib_pointer_with_i32(
-                    binding.attribute,
-                    4,
-                    WebGl2RenderingContext::FLOAT,
-                    false,
-                    binding.stride as i32,
-                    binding.offset as i32,
-                );
-                gl.vertex_attrib_divisor(binding.attribute, if binding.instanced { 1 } else { 0 });
-                gl.enable_vertex_attrib_array(binding.attribute);
-            }
-
-            gl.bind_buffer(
-                WebGl2RenderingContext::ELEMENT_ARRAY_BUFFER,
-                Some(&index_buffer.buffer),
-            );
-
-            Ok(Renderable {
-                context: Rc::clone(gl),
-                vertex_array,
-            })
-        } else {
-            Err("creating vertex array object".into())
-        }
     }
 }

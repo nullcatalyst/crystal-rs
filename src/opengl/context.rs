@@ -133,7 +133,7 @@ impl Context {
     where
         T: Sized,
     {
-        vertex_buffer.update_with_slice(data)
+        vertex_buffer.update(data)
     }
 
     pub fn create_renderable(

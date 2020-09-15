@@ -14,15 +14,20 @@ use-webgl = [
   "wasm-bindgen",
   "js-sys",
   "web-sys",
+  "web-sys/Document",
+  "web-sys/DomRect",
+  "web-sys/Element",
   "web-sys/HtmlCanvasElement",
   "web-sys/HtmlImageElement",
   "web-sys/WebGl2RenderingContext",
   "web-sys/WebGlBuffer",
+  "web-sys/WebGlContextAttributes",
   "web-sys/WebGlProgram",
   "web-sys/WebGlShader",
   "web-sys/WebGlTexture",
   "web-sys/WebGlUniformLocation",
   "web-sys/WebGlVertexArrayObject",
+  "web-sys/Window",
 ]
 
 # optional window system hooks

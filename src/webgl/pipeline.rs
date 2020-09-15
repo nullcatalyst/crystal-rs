@@ -1,7 +1,7 @@
-use crate::opengl::err::Result;
-use crate::opengl::internal::Program;
-use crate::opengl::Shader;
 use crate::shared::{Binding, PipelineDesc};
+use crate::webgl::err::Result;
+use crate::webgl::internal::Program;
+use crate::webgl::Shader;
 use std::rc::Rc;
 
 pub struct Pipeline {

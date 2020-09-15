@@ -55,7 +55,7 @@ impl VertexBuffer {
         }
     }
 
-    pub(crate) fn update_with_slice<T>(&mut self, data: &[T]) -> Result<()>
+    pub(crate) fn update<T>(&mut self, data: &[T]) -> Result<()>
     where
         T: Sized,
     {

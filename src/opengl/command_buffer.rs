@@ -7,7 +7,8 @@ use std::rc::Rc;
 pub struct CommandBuffer {
     pub(crate) clear_color: Option<(f32, f32, f32, f32)>,
     pub(crate) pipeline_index: u32,
-    // A reference to the shader program is needed to be able to set the uniform block binding.
+    /// A reference to the shader program is needed to be able to set the
+    /// uniform block binding.
     pub(crate) shader_program: Rc<Program>,
     pub(crate) bindings: Vec<Binding>,
 }
@@ -62,16 +63,16 @@ impl CommandBuffer {
         self.bindings = pipeline.bindings.clone();
     }
 
-    pub fn use_uniform(&mut self, uniform_buffer: &UniformBuffer, id: u32) {
+    pub fn use_uniform(&mut self, uniform_buffer: &UniformBuffer, location: u32, binding: u32) {
         unsafe {
-            gl::BindBufferBase(gl::UNIFORM_BUFFER, id, uniform_buffer.buffer.0);
-            gl::UniformBlockBinding(self.shader_program.0, id, id);
+            gl::BindBufferBase(gl::UNIFORM_BUFFER, location, uniform_buffer.buffer.0);
+            gl::UniformBlockBinding(self.shader_program.0, location, binding);
         }
     }
 
-    pub fn use_texture(&mut self, texture: &Texture, id: i32) {
+    pub fn use_texture(&mut self, texture: &Texture, location: i32) {
         unsafe {
-            gl::Uniform1i(id, 0);
+            gl::Uniform1i(location, 0);
             gl::ActiveTexture(gl::TEXTURE0);
             gl::BindTexture(gl::TEXTURE_2D, texture.texture);
         }
