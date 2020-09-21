@@ -5,7 +5,7 @@ name = "crystal"
 version = "0.1.0"
 
 [features]
-default = []
+default = ["use-webgl", "use-promise"]
 
 # backends
 use-metal = ["cocoa", "foreign-types", "metal", "objc"]
@@ -33,6 +33,9 @@ use-webgl = [
 # optional window system hooks
 use-winit = ["winit"]
 use-sdl2 = ["sdl2", "raw-window-handle", "sdl2/raw-window-handle"]
+
+# optional js
+use-promise = []
 
 [dependencies]
 # shared

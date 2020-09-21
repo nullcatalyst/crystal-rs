@@ -3,13 +3,21 @@ use crate::webgl::err::Result;
 use crate::TextureFilter;
 use js_sys::Function;
 use std::rc::Rc;
+use std::sync::Mutex;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::{HtmlImageElement, WebGl2RenderingContext, WebGlTexture};
 
+#[cfg(feature = "use-promise")]
+use crate::webgl::internal::Promise;
+
+#[wasm_bindgen]
 pub struct Texture {
     pub(crate) context: Rc<WebGl2RenderingContext>,
     pub(crate) texture: WebGlTexture,
+
+    #[cfg(feature = "use-promise")]
+    promise: Rc<Mutex<Promise<bool>>>,
 }
 
 impl Texture {
@@ -19,6 +27,8 @@ impl Texture {
         filter: TextureFilter,
     ) -> Result<Texture> {
         if let Some(texture) = gl.create_texture() {
+            let promise = Rc::from(Mutex::from(Promise::new()));
+
             gl.bind_texture(WebGl2RenderingContext::TEXTURE_2D, Some(&texture));
 
             // Because images have to be download over the internet they might
@@ -44,6 +54,7 @@ impl Texture {
                 let gl = Rc::clone(gl);
                 let texture = texture.clone();
                 let image = Rc::clone(&image);
+                let promise = Rc::clone(&promise);
 
                 &Closure::once_into_js(Box::from(move || {
                         let w = image.width();
@@ -101,6 +112,13 @@ impl Texture {
                                 }
                             }
                         }
+
+                        #[cfg(feature = "use-promise")]
+                        {
+                            if let Ok(mut promise) = promise.lock() {
+                                promise.resolve(true);
+                            }
+                        }
                 }))
                 .dyn_into::<Function>()
                 .unwrap()
@@ -111,6 +129,8 @@ impl Texture {
             Ok(Texture {
                 context: Rc::clone(gl),
                 texture,
+                #[cfg(feature = "use-promise")]
+                promise,
             })
         } else {
             Err("creating texture".into())
@@ -121,5 +141,15 @@ impl Texture {
 impl<'a> Drop for Texture {
     fn drop(&mut self) {
         self.context.delete_texture(Some(&self.texture));
+    }
+}
+
+#[cfg(feature = "use-promise")]
+// #[wasm_bindgen]
+impl Texture {
+    pub async fn promise(&mut self) {
+        if let Ok(_promise) = self.promise.lock() {
+            // promise.await;
+        }
     }
 }
